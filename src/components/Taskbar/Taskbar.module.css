@@ -1,0 +1,85 @@
+.taskbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 38px;
+  background: rgba(0, 4, 0, 0.96);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  gap: 4px;
+  z-index: 7000;
+  backdrop-filter: blur(4px);
+  font-family: var(--font-mono);
+}
+
+.taskBtn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 9px;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: border-color 0.1s, color 0.1s, background 0.1s;
+  max-width: 130px;
+  overflow: hidden;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+}
+
+.taskBtn:hover {
+  border-color: var(--border);
+  color: var(--text-primary);
+  background: rgba(0, 255, 65, 0.03);
+}
+
+.taskBtn.active {
+  border-color: rgba(0, 255, 65, 0.2);
+  color: var(--green-dim);
+  background: rgba(0, 255, 65, 0.04);
+}
+
+.taskBtn.minimized {
+  opacity: 0.4;
+  border-style: dashed;
+}
+
+.taskIcon {
+  font-size: 10px;
+  flex-shrink: 0;
+}
+
+.taskLabel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sep {
+  width: 1px;
+  height: 18px;
+  background: var(--border);
+  margin: 0 4px;
+  flex-shrink: 0;
+}
+
+.rightArea {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 9px;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+}
+
+.clock {
+  color: var(--text-dim);
+  letter-spacing: 1px;
+}

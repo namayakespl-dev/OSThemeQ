@@ -1,0 +1,386 @@
+/* ════════════════════════════════════════════════
+   Desktop  —  全体レイアウト
+   HEADER (32px)
+   ├─ SIDEBAR (240px固定)
+   └─ WORKSPACE (flex:1, ウィンドウ展開エリア)
+   TASKBAR (38px)
+   ════════════════════════════════════════════════ */
+
+/* ─── ルートコンテナ ─── */
+.desktop {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg);
+  font-family: var(--font-mono);
+}
+
+/* CRT scanlines — 全体に重ねる */
+.desktop::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(0, 255, 65, 0.018) 3px,
+    rgba(0, 255, 65, 0.018) 4px
+  );
+  pointer-events: none;
+  z-index: 9500;
+}
+
+/* ─── ヘッダーバー ─── */
+.headerBar {
+  flex-shrink: 0;
+  height: 32px;
+  background: #000801;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 16px;
+  z-index: 300;
+}
+
+.sysLabel {
+  font-size: 10px;
+  color: var(--green-dim);
+  letter-spacing: 3px;
+  font-weight: 600;
+}
+
+.sysLabel span {
+  color: var(--green);
+}
+
+.headerDivider { flex: 1; }
+
+.statusIndicators {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 9px;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+}
+
+.statusDot {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--green);
+  margin-right: 5px;
+  box-shadow: 0 0 5px var(--green-glow);
+  animation: blink 3s infinite;
+}
+
+@keyframes blink {
+  0%, 88%, 100% { opacity: 1; }
+  92% { opacity: 0.1; }
+}
+
+/* ─── 中段（サイドバー + ワークスペース） ─── */
+.body {
+  flex: 1 1 0;
+  min-height: 0;           /* flex子要素が正しく縮む */
+  display: flex;
+  overflow: hidden;
+}
+
+/* ════════════════════════════════
+   SIDEBAR（左固定エリア）
+   ════════════════════════════════ */
+.sidebar {
+  flex-shrink: 0;
+  width: 240px;
+  background: #010801;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 200;
+}
+
+.sidebarHeader {
+  padding: 8px 14px 6px;
+  font-size: 8px;
+  color: var(--text-muted);
+  letter-spacing: 3px;
+  border-bottom: 1px solid rgba(0, 255, 65, 0.06);
+  flex-shrink: 0;
+}
+
+.folderList {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 4px 0;
+}
+
+/* マトリックス背景（サイドバー内に封じ込め） */
+.matrixBg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.matrixCol {
+  position: absolute;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  animation: matrixFall linear infinite;
+  opacity: 0.05;
+  font-size: 10px;
+  color: var(--green);
+  line-height: 1.2;
+  user-select: none;
+}
+
+@keyframes matrixFall {
+  0%   { transform: translateY(-100%); }
+  100% { transform: translateY(110vh); }
+}
+
+/* フォルダ行 */
+.folderRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 14px;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(0, 255, 65, 0.04);
+  transition: background 0.12s;
+  user-select: none;
+  position: relative;
+  z-index: 1;
+}
+
+.folderRow:hover {
+  background: rgba(0, 255, 65, 0.06);
+}
+
+.folderRow:active {
+  background: rgba(0, 255, 65, 0.1);
+}
+
+.folderGlyph {
+  font-size: 14px;
+  width: 18px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.folderInfo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.folderName {
+  font-size: 11px;
+  color: var(--text-primary);
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.folderMeta {
+  font-size: 8px;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+}
+
+.lockedTag {
+  font-size: 8px;
+  color: var(--red);
+  padding: 1px 4px;
+  border: 1px solid rgba(255, 42, 60, 0.35);
+  letter-spacing: 1px;
+  flex-shrink: 0;
+}
+
+.openTag {
+  font-size: 8px;
+  color: var(--green-dim);
+  letter-spacing: 1px;
+  flex-shrink: 0;
+}
+
+/* ════════════════════════════════
+   WORKSPACE（右側ウィンドウ展開エリア）
+   ════════════════════════════════ */
+.workspace {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 0;
+  position: relative;   /* ← ウィンドウの position:absolute の基準 */
+  overflow: hidden;     /* ← ウィンドウがここからはみ出さない */
+  background: var(--bg);
+}
+
+/* ワークスペース内のグリッド線（背景感） */
+.workspace::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0, 255, 65, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 65, 0.025) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ワークスペースが空のとき */
+.workspaceEmpty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.emptyHint {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.emptyTitle {
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 4px;
+}
+
+.emptyCmd {
+  font-size: 9px;
+  color: rgba(0, 255, 65, 0.12);
+  letter-spacing: 2px;
+}
+
+/* ─── ブランディング ─── */
+.branding {
+  position: absolute;
+  bottom: 10px;
+  right: 16px;
+  text-align: right;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.brandTitle {
+  font-size: 9px;
+  color: var(--text-muted);
+  letter-spacing: 4px;
+}
+
+.brandSub {
+  font-size: 7px;
+  color: rgba(0, 255, 65, 0.08);
+  letter-spacing: 2px;
+  margin-top: 2px;
+}
+
+/* ─── ゲームクリアオーバーレイ ─── */
+.clearedOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.clearedBox {
+  border: 1px solid var(--green);
+  background: #000f01;
+  padding: 48px 64px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 0 80px rgba(0, 255, 65, 0.15);
+  position: relative;
+}
+
+.clearedBox::before,
+.clearedBox::after {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-color: var(--green);
+  border-style: solid;
+}
+
+.clearedBox::before {
+  top: -1px; left: -1px;
+  border-width: 2px 0 0 2px;
+}
+
+.clearedBox::after {
+  bottom: -1px; right: -1px;
+  border-width: 0 2px 2px 0;
+}
+
+.clearedTitle {
+  font-size: 18px;
+  color: var(--green);
+  letter-spacing: 6px;
+  font-weight: 700;
+  text-shadow: 0 0 20px var(--green-glow);
+}
+
+.clearedLog {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  align-items: flex-start;
+  font-size: 10px;
+  color: var(--green-dim);
+  letter-spacing: 1px;
+}
+
+.clearedLog span { animation: slideIn 0.3s ease both; }
+.clearedLog span:nth-child(1) { animation-delay: 0.2s; }
+.clearedLog span:nth-child(2) { animation-delay: 0.6s; }
+.clearedLog span:nth-child(3) { animation-delay: 1.0s; }
+.clearedLog span:nth-child(4) { animation-delay: 1.4s; }
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.clearedSub {
+  font-size: 9px;
+  color: var(--text-muted);
+  letter-spacing: 2px;
+  animation: fadeIn 1s ease 2s both;
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+  width: 100%;
+  text-align: center;
+}
