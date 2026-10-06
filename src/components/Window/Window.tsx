@@ -17,6 +17,7 @@ export function Window({ window: win, workspaceRef, children }: WindowProps) {
     minimizeWindow,
     toggleMaximize,
     focusWindow,
+    resizeWindow,
   } = useGame();
 
   const { onMouseDown: onTitleBarDrag } = useDraggable(win.id, workspaceRef);
@@ -63,7 +64,13 @@ export function Window({ window: win, workspaceRef, children }: WindowProps) {
       }
     };
 
-    const onUp = () => {
+    const onUp = (ue: MouseEvent) => {
+      if (resizeRef.current) {
+        const newW = Math.max(320, resizeRef.current.startW + ue.clientX - resizeRef.current.startX);
+        const newH = Math.max(180, resizeRef.current.startH + ue.clientY - resizeRef.current.startY);
+        // import した resizeWindow で状態を更新する
+        resizeWindow(win.id, newW, newH);
+      }
       resizeRef.current = null;
       window.removeEventListener('mousemove', onMove);
       window.removeEventListener('mouseup', onUp);
@@ -71,7 +78,7 @@ export function Window({ window: win, workspaceRef, children }: WindowProps) {
 
     window.addEventListener('mousemove', onMove);
     window.addEventListener('mouseup', onUp);
-  }, [win.id, win.maximized, win.width, win.height]);
+  }, [win.id, win.maximized, win.width, win.height, resizeWindow]);
 
   if (win.minimized) return null;
 

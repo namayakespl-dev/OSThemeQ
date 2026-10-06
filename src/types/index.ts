@@ -26,6 +26,13 @@ export interface FolderItem {
 
 export type FSItem = FileItem | FolderItem;
 
+export interface WindowBounds {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
 export interface WindowState {
   id: string;
   title: string;
@@ -38,6 +45,7 @@ export interface WindowState {
   // zIndex は GameContext の activeWindowId で動的に決定するため不要
   minimized: boolean;
   maximized: boolean;
+  previousBounds?: WindowBounds;
 }
 
 export interface GameState {

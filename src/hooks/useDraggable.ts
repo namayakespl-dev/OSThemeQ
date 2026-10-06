@@ -34,8 +34,14 @@ export function useDraggable(
         const ws = workspaceRef.current;
         if (ws) {
           const r = ws.getBoundingClientRect();
-          newX = Math.min(Math.max(newX, 0), Math.max(0, r.width  - 50));
-          newY = Math.min(Math.max(newY, 0), r.height - TITLE_BAR_H);
+          // ウィンドウの幅の大部分が外に出ても、最低100pxは画面内に残るようにする
+          const minVisibleWidth = 100;
+          newX = Math.max(newX, -win.width + minVisibleWidth);
+          newX = Math.min(newX, r.width - minVisibleWidth);
+          // 上にはタイトルバーが消えないように0でクランプ
+          newY = Math.max(newY, 0);
+          // 下にはタイトルバーが完全に消えないようにクランプ
+          newY = Math.min(newY, r.height - TITLE_BAR_H);
         } else {
           newX = Math.max(0, newX);
           newY = Math.max(0, newY);

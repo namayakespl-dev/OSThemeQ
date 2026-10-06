@@ -16,6 +16,7 @@ type GameAction =
   | { type: 'CLOSE_WINDOW';     payload: string }
   | { type: 'CLOSE_ALL_WINDOWS' }                // ゲームクリア演出用
   | { type: 'MOVE_WINDOW';      payload: { id: string; x: number; y: number } }
+  | { type: 'RESIZE_WINDOW';    payload: { id: string; width: number; height: number } }
   | { type: 'MINIMIZE_WINDOW';  payload: string }
   | { type: 'RESTORE_WINDOW';   payload: string }
   | { type: 'TOGGLE_MAXIMIZE';  payload: string }
@@ -93,13 +94,41 @@ function gameReducer(state: GameState, action: GameAction): GameState {
         ),
       };
 
-    case 'TOGGLE_MAXIMIZE':
-      // 最大化はサイズ変更のみ。z-index (アクティブ状態) は変更しない
+    case 'RESIZE_WINDOW':
       return {
         ...state,
         windows: state.windows.map(w =>
-          w.id === action.payload ? { ...w, maximized: !w.maximized } : w
+          w.id === action.payload.id
+            ? { ...w, width: action.payload.width, height: action.payload.height }
+            : w
         ),
+      };
+
+    case 'TOGGLE_MAXIMIZE':
+      return {
+        ...state,
+        windows: state.windows.map(w => {
+          if (w.id !== action.payload) return w;
+          
+          if (!w.maximized) {
+            // 最大化する時: 現在の bounds を退避
+            return {
+              ...w,
+              maximized: true,
+              previousBounds: { x: w.x, y: w.y, width: w.width, height: w.height },
+            };
+          } else {
+            // 元に戻す時: 退避した bounds を復元 (なければそのまま)
+            return {
+              ...w,
+              maximized: false,
+              x: w.previousBounds?.x ?? w.x,
+              y: w.previousBounds?.y ?? w.y,
+              width: w.previousBounds?.width ?? w.width,
+              height: w.previousBounds?.height ?? w.height,
+            };
+          }
+        }),
       };
 
     case 'UNLOCK_FOLDER': {
@@ -146,6 +175,7 @@ interface GameContextValue {
    */
   focusWindow: (id: string) => void;
   moveWindow: (id: string, x: number, y: number) => void;
+  resizeWindow: (id: string, width: number, height: number) => void;
   minimizeWindow: (id: string) => void;
   restoreWindow: (id: string) => void;
   toggleMaximize: (id: string) => void;
@@ -223,6 +253,10 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     dispatch({ type: 'MOVE_WINDOW', payload: { id, x, y } });
   }, []);
 
+  const resizeWindow = useCallback((id: string, width: number, height: number) => {
+    dispatch({ type: 'RESIZE_WINDOW', payload: { id, width, height } });
+  }, []);
+
   const minimizeWindow = useCallback((id: string) => {
     dispatch({ type: 'MINIMIZE_WINDOW', payload: id });
     setActiveWindowId(prev => (prev === id ? null : prev));
@@ -262,6 +296,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         closeAllWindows,
         focusWindow,
         moveWindow,
+        resizeWindow,
         minimizeWindow,
         restoreWindow,
         toggleMaximize,
