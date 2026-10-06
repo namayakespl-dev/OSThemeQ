@@ -34,14 +34,12 @@ export function useDraggable(
         const ws = workspaceRef.current;
         if (ws) {
           const r = ws.getBoundingClientRect();
-          // ウィンドウの幅の大部分が外に出ても、最低100pxは画面内に残るようにする
-          const minVisibleWidth = 100;
-          newX = Math.max(newX, -win.width + minVisibleWidth);
-          newX = Math.min(newX, r.width - minVisibleWidth);
-          // 上にはタイトルバーが消えないように0でクランプ
+          // ウィンドウ全体が常にWorkspace内に収まるようにクランプ
+          newX = Math.max(newX, 0);
+          newX = Math.min(newX, r.width - win.width);
+          
           newY = Math.max(newY, 0);
-          // 下にはタイトルバーが完全に消えないようにクランプ
-          newY = Math.min(newY, r.height - TITLE_BAR_H);
+          newY = Math.min(newY, r.height - win.height);
         } else {
           newX = Math.max(0, newX);
           newY = Math.max(0, newY);
