@@ -6,6 +6,8 @@ export interface FileItem {
   type: FileType;
   content?: string;
   metadata?: Record<string, string>;
+  /** 動画ファイル等の代わりに表示する静止画のパス（public/ からの相対） */
+  thumbnail?: string;
 }
 
 export type LockType = 'numeric' | 'text';

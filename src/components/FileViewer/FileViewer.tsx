@@ -2,6 +2,7 @@ import React from 'react';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { FileItem } from '../../types';
 import { useGame } from '../../context/GameContext';
+import { ImageViewer } from '../ImageViewer/ImageViewer';
 import styles from './FileViewer.module.css';
 
 // ─── Markdown renderer ────────────────────────────────────────────
@@ -88,6 +89,11 @@ function renderMarkdown(text: string): React.ReactNode {
 // ─── FileViewer ───────────────────────────────────────────────────
 export function FileViewer({ file }: { file: FileItem }) {
   const { openSystemOverride } = useGame();
+
+  // 動画ファイルでもサムネイルが設定されていれば静止画ビューアで表示する
+  if (file.thumbnail) {
+    return <ImageViewer file={file} />;
+  }
 
   const inner = () => {
     switch (file.type) {

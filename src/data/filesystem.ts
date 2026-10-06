@@ -142,6 +142,7 @@ BGM候補：
         id: 'movie-inu-mp4',
         name: '犬.mp4',
         type: 'mp4',
+        thumbnail: '/images/inu_thumbnail.jpg',
         metadata: {
           title: '犬',
           duration: '3:22',
