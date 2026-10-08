@@ -68,6 +68,11 @@ export function Window({ window: win, workspaceRef, children }: WindowProps) {
       if (resizeRef.current) {
         const newW = Math.max(320, resizeRef.current.startW + ue.clientX - resizeRef.current.startX);
         const newH = Math.max(180, resizeRef.current.startH + ue.clientY - resizeRef.current.startY);
+        const el = document.getElementById(`win-${win.id}`);
+        if (el) {
+          el.style.width = '';
+          el.style.height = '';
+        }
         // import した resizeWindow で状態を更新する
         resizeWindow(win.id, newW, newH);
       }
@@ -79,6 +84,27 @@ export function Window({ window: win, workspaceRef, children }: WindowProps) {
     window.addEventListener('mousemove', onMove);
     window.addEventListener('mouseup', onUp);
   }, [win.id, win.maximized, win.width, win.height, resizeWindow]);
+
+  // ─── コントロールボタン・ダブルクリック ハンドラ ─────────────────
+  const handleClose = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    closeWindow(win.id);
+  }, [closeWindow, win.id]);
+
+  const handleMinimize = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    minimizeWindow(win.id);
+  }, [minimizeWindow, win.id]);
+
+  const handleToggleMaximize = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    toggleMaximize(win.id);
+  }, [toggleMaximize, win.id]);
+
+  const handleTitleDoubleClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    toggleMaximize(win.id);
+  }, [toggleMaximize, win.id]);
 
   if (win.minimized) return null;
 
@@ -105,32 +131,36 @@ export function Window({ window: win, workspaceRef, children }: WindowProps) {
       <div
         className={`${styles.titleBar} ${win.maximized ? styles.maxed : ''}`}
         onMouseDown={handleTitleMouseDown}  // ★ focusWindow + ドラッグ
-        onDoubleClick={() => toggleMaximize(win.id)}
+        onDoubleClick={handleTitleDoubleClick} // ★ ダブルクリックで最大化 / 復元
       >
         <div className={styles.controls}>
           <button
             className={`${styles.btn} ${styles.btnClose}`}
             onMouseDown={e => e.stopPropagation()}
-            onClick={e => { e.stopPropagation(); closeWindow(win.id); }}
-            title="Close"
+            onClick={handleClose}
+            title="閉じる (Close)"
+            aria-label="閉じる"
           />
           <button
             className={`${styles.btn} ${styles.btnMin}`}
             onMouseDown={e => e.stopPropagation()}
-            onClick={e => { e.stopPropagation(); minimizeWindow(win.id); }}
-            title="Minimize"
+            onClick={handleMinimize}
+            title="最小化 (Minimize)"
+            aria-label="最小化"
           />
           <button
             className={`${styles.btn} ${styles.btnMax}`}
             onMouseDown={e => e.stopPropagation()}
-            onClick={e => { e.stopPropagation(); toggleMaximize(win.id); }}
-            title="Maximize / Restore"
+            onClick={handleToggleMaximize}
+            title={win.maximized ? '元のサイズに戻す (Restore)' : '最大化 (Maximize)'}
+            aria-label={win.maximized ? '元のサイズに戻す' : '最大化'}
           />
         </div>
         <div className={styles.titleWrap}>
           <span className={styles.titlePrompt}>root@sys:~$</span>
           <span className={styles.titleText}>{win.title}</span>
         </div>
+        <div className={styles.controlsSpacer} />
       </div>
 
       {/* コンテンツ */}
