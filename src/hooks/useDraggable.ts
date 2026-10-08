@@ -1,7 +1,6 @@
 import { useRef, useCallback, type RefObject } from 'react';
 import { useGame } from '../context/GameContext';
 
-const TITLE_BAR_H = 30;
 
 export function useDraggable(
   windowId: string,
