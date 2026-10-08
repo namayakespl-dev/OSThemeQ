@@ -97,6 +97,7 @@ BGM候補：
         id: 'movie-introduce-mp4',
         name: 'Introduce_namayanscustom.mp4',
         type: 'mp4',
+        thumbnail: '/images/nmkssmn.jpg',
         metadata: {
           title: 'Introduce_namayanscustom',
           duration: '1:47',
