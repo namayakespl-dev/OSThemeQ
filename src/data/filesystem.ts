@@ -225,12 +225,14 @@ BGM候補：
     lockHint: '【アクセス制限】次回コミュニティイベントの開始日時（MMDDHH）を入力せよ',
     children: [
       {
-        id: 'community-dog-tree',
-        name: 'dog_family_tree.png',
+        id: 'community-dog-family',
+        name: 'dog_family.png',
         type: 'png',
-        content: 'placeholder',
+        thumbnail: '/images/dog_family.png',
         metadata: {
+          title: '我が家の三つ子 家系図',
           description: '三つ子の長男：だいず',
+          createdAt: '0616',
         },
       },
       {

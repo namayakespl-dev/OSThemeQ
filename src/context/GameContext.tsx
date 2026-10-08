@@ -5,7 +5,7 @@ import React, {
   useState,
   useCallback,
 } from 'react';
-import type { GameState, WindowState, FSItem, FolderItem } from '../types';
+import type { GameState, WindowState, FSItem, FolderItem, FileItem } from '../types';
 import { initialFilesystem } from '../data/filesystem';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -208,6 +208,10 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     const baseY = 20 + (windowCounter % 8) * 28;
     windowCounter++;
 
+    const isImage = item.type !== 'folder' && (Boolean((item as FileItem).thumbnail) || item.name.endsWith('.png'));
+    const defaultWidth = item.type === 'folder' ? 540 : (isImage ? 660 : 480);
+    const defaultHeight = item.type === 'folder' ? 400 : (isImage ? 440 : 360);
+
     dispatch({
       type: 'OPEN_WINDOW',
       payload: {
@@ -217,8 +221,8 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         item,
         x: baseX + offset.x,
         y: baseY + offset.y,
-        width:  item.type === 'folder' ? 540 : 480,
-        height: item.type === 'folder' ? 400 : 360,
+        width: defaultWidth,
+        height: defaultHeight,
       },
     });
     // 開いたウィンドウを即アクティブにする

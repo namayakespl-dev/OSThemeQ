@@ -90,9 +90,13 @@ function renderMarkdown(text: string): React.ReactNode {
 export function FileViewer({ file }: { file: FileItem }) {
   const { openSystemOverride } = useGame();
 
-  // 動画ファイルでもサムネイルが設定されていれば静止画ビューアで表示する
-  if (file.thumbnail) {
-    return <ImageViewer file={file} />;
+  // サムネイルが設定されているファイル、または画像ファイル（png）は画像ビューアで表示する
+  if (file.thumbnail || file.type === 'png') {
+    const fileWithThumb = {
+      ...file,
+      thumbnail: file.thumbnail ?? `/images/${file.name}`,
+    };
+    return <ImageViewer file={fileWithThumb} />;
   }
 
   const inner = () => {
